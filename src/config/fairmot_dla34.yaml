@@ -1,0 +1,101 @@
+# model architecture
+model_name: "fairmot_dla34"   # 模型名
+
+#global config
+device_target: "GPU"
+dataset_sink_mode: False
+context:      # 训练环境
+    mode: 1 #0--Graph Mode; 1--Pynative Mode
+    device_target: "GPU"
+    save_graphs: False
+    device_id: 2
+
+# model settings of every parts
+model:
+    type: FairmotDla34  # 一般我们使用BaseClassifier构建模型，参数包含backbone, neck和head
+    down_ratio: 4 # 与数据增强有关
+    hm: 1 # num_classes
+    wh: 4 # 2 if not regress left, top, right, bottom of bbox, else 4
+    feature_id: 128 # reid_dim
+    reg: 2 # if reg_offset
+
+# learning rate for training process
+learning_rate:     # learning_rate规划，对应方法在mindvision/engine/lr_schedule中
+    lr_scheduler: "dynamic_lr" # 这个dynamic_lr不是普通的dynamiclr，它使用了cosine_learning_rate
+    lr: 0.0001
+    steps_per_epoch: 596
+    warmup_steps: 0
+    warmup_ratio: 1.0
+    epoch_size: 30
+
+# optimizer for training process
+optimizer:      # optimizer参数
+    type: 'Adam'
+
+loss:       # loss 模块
+    type: CenterNetMultiPoseLossCell
+    reg_loss: 'l1'
+    hm_weight: 1
+    wh_weight: 0.1
+    off_weight: 1
+    reg_offset: True
+    reid_dim: 128
+    nID: 14455
+    batch_size: 4
+    
+train:       # 预训练相关
+    pre_trained: False
+    pretrained_model: ""
+    ckpt_path: "./output/"
+    epochs: 30
+    save_checkpoint_epochs: 5
+    save_checkpoint_steps: 1875
+    keep_checkpoint_max: 10
+    run_distribute: False
+
+eval:
+    pretrained_model: "./"
+
+infer:       # 推理相关
+    pretrained_model: ""
+    batch_size: 1
+    image_path: ""
+    normalize: True
+    output_dir: "./infer_output"
+ 
+export:       # 模型导出为其他格式
+    pretrained_model: ""
+    batch_size: 256
+    image_height: 224
+    image_width: 224
+    input_channel: 3
+    file_name: "i3d_rgb"
+    file_formate: "MINDIR"
+
+
+data_loader:
+    train:          # 验证、推理相关，参数与train基本一致
+        dataset:
+              type: MixJDE
+              data_json: "msvideo/example/fairmot/data/data.json"
+              split: 'train'
+              batch_size: 8
+              num_parallel_workers: 1
+              shuffle: True
+        map:
+            operations:
+              - type: JDELoad
+                size: [1088, 608]
+    eval:          # 验证、推理相关，参数与train基本一致
+        dataset:
+            type: MixJDE
+            data_json: "msvideo/example/fairmot/data/data.json"
+            split: 'val'
+            batch_size: 8
+            num_parallel_workers: 1
+            shuffle: False
+        map:
+            operations:
+              - type: JDELoad
+                size: [1088, 608]
+    group_size: 1

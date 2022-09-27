@@ -1,0 +1,21 @@
+{
+    "seq_root":"datas/data",
+    "data_root": "/home/publicfile/dataset/tracking",
+    "train":
+    {
+        "cuhksysu":"cuhksysu.train",
+        "caltech":"caltech.all",
+        "citypersons":"citypersons.train",
+        "mot17":"mot17.half",
+        "prw":"prw.train",
+        "eth":"eth.train"
+    },
+    "eval":
+    {
+        "mot17":"mot17.val"
+    },
+    "infer":
+    {
+        "mot17":"mot17.val"
+    }
+}
