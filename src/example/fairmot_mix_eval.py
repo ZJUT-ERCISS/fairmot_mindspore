@@ -125,26 +125,26 @@ if __name__ == '__main__':
     # data_root = '/home/publicfile/dataset/MOT17/images/train'
     if not os.path.exists(args.output_dir):
         os.mkdir(args.output_dir)
-    # if args.seqs_str == 'mot17':
-    #     args.seqs = ['MOT17-02-SDP',
-    #                  'MOT17-04-SDP',
-    #                  'MOT17-05-SDP',
-    #                  'MOT17-09-SDP',
-    #                  'MOT17-10-SDP',
-    #                  'MOT17-13-SDP']
-    #     args.data_type = 'mot'
-    # if args.seqs_str == 'mot16':
-    #     args.seqs = ['MOT16-01',
-    #                  'MOT16-03',
-    #                  'MOT16-06',
-    #                  'MOT16-07',
-    #                  'MOT16-08',
-    #                  'MOT16-12',
-    #                  'MOT16-14']
-    #     args.data_type = 'mot'
-    args.seqs = ['MOT20-01',
-                 'MOT20-02',
-                 'MOT20-03',
-                 'MOT20-05']
-    args.data_type = 'mot'
+    if args.seqs_str == 'mot17':
+        args.seqs = ['MOT17-02-SDP',
+                     'MOT17-04-SDP',
+                     'MOT17-05-SDP',
+                     'MOT17-09-SDP',
+                     'MOT17-10-SDP',
+                     'MOT17-13-SDP']
+        args.data_type = 'mot'
+    if args.seqs_str == 'mot16':
+        args.seqs = ['MOT16-01',
+                     'MOT16-03',
+                     'MOT16-06',
+                     'MOT16-07',
+                     'MOT16-08',
+                     'MOT16-12',
+                     'MOT16-14']
+        args.data_type = 'mot'
+    # args.seqs = ['MOT20-01',
+    #              'MOT20-02',
+    #              'MOT20-03',
+    #              'MOT20-05']
+    # args.data_type = 'mot'
     fairmot_dla34_eval(args)

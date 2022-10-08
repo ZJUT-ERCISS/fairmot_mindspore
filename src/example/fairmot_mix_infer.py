@@ -46,7 +46,9 @@ def fairmot_dla34_infer(args_opt):
     # Calculate infer results.
     timer_avgs, timer_calls = [], []
     for seq in args_opt.seqs:
-        dataloader = LoadImages(os.path.join(args_opt.data_root, seq, 'img1'), (1088, 608))
+        dataloader = LoadImages(os.path.join(args_opt.data_root, seq, 'img1'),
+                                0,
+                                (1088, 608))
         tracker = JDETracker(args_opt.conf_thres,
                              args_opt.track_buffer,
                              args_opt.K,
@@ -63,7 +65,7 @@ def fairmot_dla34_infer(args_opt):
                              result_filename,
                              save_dir=seq_save_dir,
                              show_image=False)
-        if args_opt.save_videos:
+        if args_opt.save_videos == "True":
             output_video_path = os.path.join(args_opt.output_dir, '{}.mp4'.format(seq))
             cmd_str = 'ffmpeg -f image2 -i {}/%05d.jpg -c:v copy {}'.format(args_opt.output_dir, output_video_path)
             os.system(cmd_str)
@@ -81,7 +83,7 @@ if __name__ == '__main__':
     parser.add_argument('--ckpt_path', required=True, default=None, help='Path to trained model weights.')
     parser.add_argument('--seqs_str', type=str, default='mot17', choices=['mot16', 'mot17'], help="Name of dataset.")
     parser.add_argument('--output_dir', type=str, default='output', help="Relative path to result files.")
-    parser.add_argument('--save_videos', type=bool, default=True, help='Whether to save videos.')
+    parser.add_argument('--save_videos', type=str, default="True", help='Whether to save videos.')
     parser.add_argument('--num_parallel_workers', type=int, default=8, help='Number of parallel workers.')
 
     parser.add_argument('--reg_loss', type=str, default='l1', help='Number of batch size.')

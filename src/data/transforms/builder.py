@@ -19,7 +19,7 @@ import inspect
 import mindspore.dataset.vision.c_transforms as c_trans
 import mindspore.dataset.vision.py_transforms as py_trans
 
-from mindvision.engine.class_factory import ClassFactory, ModuleType
+from src.utils.class_factory import ClassFactory, ModuleType
 
 
 def register_builtin_transforms():

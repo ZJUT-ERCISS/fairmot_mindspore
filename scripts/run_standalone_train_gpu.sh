@@ -1,43 +1,19 @@
-
-if [ $# != 2 ]; then
-  echo "Usage: 
-        bash run_standalone_train_gpu.sh [config_file] [pretrained_model]
-       " 
-  exit 1
-fi
-
-get_real_path() {
-  if [ "${1:0:1}" == "/" ]; then
-    echo "$1"
-  else
-    echo "$(realpath -m $PWD/$1)"
-  fi
-}
-
-export PYTHONPATH=$PWD:PYTHONPATH
-BASE_PATH=$(cd ./"`dirname $0`" || exit; pwd)
-
-CONFIG=$(get_real_path $1)
-echo "CONFIG: "$CONFIG
-
-LOAD_PRE_MODEL=$(get_real_path $2)
-echo "PRETRAINED_MODEL: "$LOAD_PRE_MODEL
-
-if [ ! -f $CONFIG ]
-then
-    echo "error: config=$CONFIG is not a file."
+#!/bin/bash
+# bash run_standalone_train_gpu.sh [DATA_JSON] [VISIBLE_DEVICES(0,1,2,3,4,5,6,7)]
+if [ $# -lt 2 ]; then
+    echo "Usage: bash scripts/run_standalone_train_gpu.sh [DATA_JSON] [VISIBLE_DEVICES(0,1,2,3,4,5,6,7)]
+    [DATA_JSON] stores training data information,
+    [VISIBLE_DEVICES] chooses which gpu device will be used during training."
 exit 1
 fi
 
-if [ ! -f $LOAD_PRE_MODEL ]
-then
-    echo "error: pretrained_model=$LOAD_PRE_MODEL is not a file."
-exit 1
+export PYTHONPATH=$PWD
+echo "export PYTHONPATH=$PWD"
+
+if [ ! -d "output" ]; then
+    mkdir output
 fi
 
-
-echo "start training on single GPU"
-env > env.log
-echo
-python -u ${BASE_PATH}/../train.py --device GPU --config_path $CONFIG \
-  --load_pre_model ${LOAD_PRE_MODEL} &> train.log &
+DATA_JSON=$1
+export CUDA_VISIBLE_DEVICES="$2"
+python src/example/fairmot_mix_train.py --data_json ${DATA_JSON} > output/train.log 2>&1 &
