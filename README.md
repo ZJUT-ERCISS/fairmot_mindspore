@@ -160,8 +160,6 @@ The infer results can be viewed in `./output`.
 
 ## [Performance](#contents)
 
-### FairMot on MIX dataset with detector
-
 #### Performance parameters
 
 | Parameters          | GPU Distributed            |

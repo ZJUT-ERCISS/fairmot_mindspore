@@ -17,11 +17,11 @@
 from mindspore import nn
 
 
-class FairMOTWithLossCell(nn.Cell):
+class TrackingLossCell(nn.Cell):
     """Cell with loss function.."""
 
     def __init__(self, net, loss):
-        super(FairMOTWithLossCell, self).__init__(auto_prefix=False)
+        super(TrackingLossCell, self).__init__(auto_prefix=False)
         self._net = net
         self._loss = loss
 

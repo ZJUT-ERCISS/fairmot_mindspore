@@ -27,7 +27,7 @@ from src.schedule import dynamic_lr
 from src.data import MixJDE
 from src.data.transforms.jde_load import JDELoad
 from src.models.fairmot import FairmotDla34
-from src.loss.fairmot_losscell import FairMOTWithLossCell
+from src.loss.tracking_losscell import TrackingLossCell
 
 
 def fairmot_dla34_train(args_opt):
@@ -113,7 +113,7 @@ def fairmot_dla34_train(args_opt):
                                     config=ckpt_config)
 
     # init the whole Model
-    net_with_loss = FairMOTWithLossCell(network, network_loss)
+    net_with_loss = TrackingLossCell(network, network_loss)
     fairmot_net = nn.TrainOneStepCell(net_with_loss, network_opt)
     model = Model(fairmot_net)
 

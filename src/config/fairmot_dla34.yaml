@@ -5,10 +5,10 @@ model_name: "fairmot_dla34"   # 模型名
 device_target: "GPU"
 dataset_sink_mode: False
 context:      # 训练环境
-    mode: 1 #0--Graph Mode; 1--Pynative Mode
+    mode: 0 #0--Graph Mode; 1--Pynative Mode
     device_target: "GPU"
     save_graphs: False
-    device_id: 2
+    device_id: 3
 
 # model settings of every parts
 model:
@@ -33,21 +33,21 @@ optimizer:      # optimizer参数
     type: 'Adam'
 
 loss:       # loss 模块
-    type: CenterNetMultiPoseLossCell
+    type: CenterNetMultiPoseLoss
     reg_loss: 'l1'
     hm_weight: 1
     wh_weight: 0.1
     off_weight: 1
     reg_offset: True
     reid_dim: 128
-    nID: 14455
-    batch_size: 4
+    nid: 14455
+    batch_size: 2
     
 train:       # 预训练相关
     pre_trained: False
     pretrained_model: ""
     ckpt_path: "./output/"
-    epochs: 30
+    epoch_size: 30
     save_checkpoint_epochs: 5
     save_checkpoint_steps: 1875
     keep_checkpoint_max: 10
@@ -77,9 +77,9 @@ data_loader:
     train:          # 验证、推理相关，参数与train基本一致
         dataset:
               type: MixJDE
-              data_json: "msvideo/example/fairmot/data/data.json"
+              data_json: "datas/data.json"
               split: 'train'
-              batch_size: 8
+              batch_size: 2
               num_parallel_workers: 1
               shuffle: True
         map:
@@ -89,9 +89,9 @@ data_loader:
     eval:          # 验证、推理相关，参数与train基本一致
         dataset:
             type: MixJDE
-            data_json: "msvideo/example/fairmot/data/data.json"
+            data_json: "datas/data.json"
             split: 'val'
-            batch_size: 8
+            batch_size: 2
             num_parallel_workers: 1
             shuffle: False
         map:

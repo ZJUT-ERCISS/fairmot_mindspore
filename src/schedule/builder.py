@@ -14,10 +14,12 @@
 # ==============================================================================
 """Builder of learning rate schedule."""
 
+
 from src.utils.check_param import Validator
 from src.schedule import warmup_cosine_annealing_lr_v1
 from src.schedule import warmup_cosine_annealing_lr_v2
 from src.schedule import warmup_step_lr
+from src.schedule import dynamic_lr
 
 
 def get_lr(args):
@@ -52,5 +54,11 @@ def get_lr(args):
                                            args.max_epoch,
                                            args.t_max,
                                            args.eta_min)
+    elif args.lr_scheduler == 'dynamic_lr':
+        lr = dynamic_lr(base_lr=args.lr,
+                        steps_per_epoch=args.steps_per_epoch,
+                        warmup_steps=args.warmup_steps,
+                        warmup_ratio=args.warmup_ratio,
+                        epoch_size=args.epoch_size)
 
     return lr
