@@ -47,15 +47,15 @@ def train_tracking(pargs):
                                           parallel_mode=ParallelMode.DATA_PARALLEL,
                                           gradients_mean=True)
         ckpt_save_dir = config.train.ckpt_path + "ckpt_" + str(get_rank()) + "/"
-        config.data_loader.train.dataset.num_shards = device_num
-        config.data_loader.train.dataset.shard_id = rank_id
-        data_set = build_dataset(config.data_loader.train.dataset)
+        config.train.data_loader.dataset.num_shards = device_num
+        config.train.data_loader.dataset.shard_id = rank_id
+        data_set = build_dataset(config.train.data_loader.dataset)
     else:
         ckpt_save_dir = config.train.ckpt_path
-        data_set = build_dataset(config.data_loader.train.dataset)
+        data_set = build_dataset(config.train.data_loader.dataset)
 
     # perpare dataset
-    transforms = build_transforms(config.data_loader.train.map.operations)
+    transforms = build_transforms(config.train.data_loader.map)
 
     data_set.transform = transforms
     dataset_train = data_set.run()

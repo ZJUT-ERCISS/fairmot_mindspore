@@ -43,7 +43,7 @@ loss:       # loss 模块
     nid: 14455
     batch_size: 2
     
-train:       # 预训练相关
+train:       # 训练相关
     pre_trained: False
     pretrained_model: ""
     ckpt_path: "./output/"
@@ -52,50 +52,47 @@ train:       # 预训练相关
     save_checkpoint_steps: 1875
     keep_checkpoint_max: 10
     run_distribute: False
-
+    data_loader:          # 验证、推理相关，参数与train基本一致
+        dataset:
+            type: MixJDE
+            data_json: "datas/data.json"
+            split: 'train'
+            batch_size: 2
+            num_parallel_workers: 1
+            shuffle: True
+        map:
+            - type: JDELoad
+              size: [1088, 608]
 eval:
-    pretrained_model: "./"
-
+    output_dir: "output"
+    ckpt_path: ".vscode/fairmot_dla34-30_886.ckpt"
+    data_seqs: "mot17" # "mot16", "mot17", "mot20" are available
+    data_type: "mot"
+    data_root: "/home/publicfile/dataset/tracking/MOT17/images/train"
+    conf_thres: 0.4
+    track_buffer: 30
+    down_ratio: 4
+    min_box_area: 100
+    max_objs: 500
+    num_classes: 1
 infer:       # 推理相关
-    pretrained_model: ""
-    batch_size: 1
-    image_path: ""
-    normalize: True
-    output_dir: "./infer_output"
- 
+    output_dir: "output"
+    ckpt_path: ".vscode/fairmot_dla34-30_886.ckpt"
+    data_seqs: "mot17" # "mot16", "mot17", "mot20" are available
+    data_type: "mot"
+    data_root: "/home/publicfile/dataset/tracking/MOT17/images/test"
+    conf_thres: 0.4
+    track_buffer: 30
+    down_ratio: 4
+    min_box_area: 100
+    max_objs: 500
+    num_classes: 1
+    save_videos: True
 export:       # 模型导出为其他格式
     pretrained_model: ""
     batch_size: 256
     image_height: 224
     image_width: 224
     input_channel: 3
-    file_name: "i3d_rgb"
+    file_name: "fairmot"
     file_formate: "MINDIR"
-
-
-data_loader:
-    train:          # 验证、推理相关，参数与train基本一致
-        dataset:
-              type: MixJDE
-              data_json: "datas/data.json"
-              split: 'train'
-              batch_size: 2
-              num_parallel_workers: 1
-              shuffle: True
-        map:
-            operations:
-              - type: JDELoad
-                size: [1088, 608]
-    eval:          # 验证、推理相关，参数与train基本一致
-        dataset:
-            type: MixJDE
-            data_json: "datas/data.json"
-            split: 'val'
-            batch_size: 2
-            num_parallel_workers: 1
-            shuffle: False
-        map:
-            operations:
-              - type: JDELoad
-                size: [1088, 608]
-    group_size: 1
