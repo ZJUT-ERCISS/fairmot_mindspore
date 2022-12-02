@@ -24,8 +24,8 @@ user=$(env | grep USER | cut -d "=" -f 2)
 if [ $user == "root" ]; 
 then
     echo "Run as root"
-    mpirun -n ${NUM_DEVICES} --allow-run-as-root python src/example/fairmot_mix_train.py --data_json ${DATA_JSON} > output/train.log 2>&1 &
+    mpirun -n ${NUM_DEVICES} --allow-run-as-root python src/example/fairmot_mix_train.py --run_distribute True --data_json ${DATA_JSON} > output/train.log 2>&1 &
 else
     echo "Run as $user"
-    mpirun -n ${NUM_DEVICES} python src/example/fairmot_mix_train.py --data_json ${DATA_JSON} > output/train.log 2>&1 &
+    mpirun -n ${NUM_DEVICES} python src/example/fairmot_mix_train.py --run_distribute True --data_json ${DATA_JSON} > output/train.log 2>&1 &
 fi

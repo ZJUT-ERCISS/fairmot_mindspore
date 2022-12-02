@@ -8,7 +8,7 @@ context:      # 训练环境
     mode: 0 #0--Graph Mode; 1--Pynative Mode
     device_target: "GPU"
     save_graphs: False
-    device_id: 3
+    device_id: 0
 
 # model settings of every parts
 model:
@@ -50,8 +50,8 @@ train:       # 训练相关
     epoch_size: 30
     save_checkpoint_epochs: 5
     save_checkpoint_steps: 1875
-    keep_checkpoint_max: 10
-    run_distribute: False
+    keep_checkpoint_max: 20
+    run_distribute: True
     data_loader:          # 验证、推理相关，参数与train基本一致
         dataset:
             type: MixJDE

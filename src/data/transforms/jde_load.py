@@ -46,12 +46,13 @@ class JDELoad(trans.PyTensorOperation):
         image, heatmap, reg_mask, identity feature, bbox size, regress local offset, index
     """
 
-    def __init__(self, size=(1088, 608), max_objs=500, ltrb=True):
+    def __init__(self, size=(1088, 608), max_objs=500, ltrb=True, clip_outside_points=True):
         self.size = tuple(size)
         self.width = size[0]
         self.height = size[1]
         self.max_objs = max_objs
         self.ltrb = ltrb
+        self.clip_outside_points = clip_outside_points
         self.mse_loss = True
         self.num_classes = 1
 
@@ -284,10 +285,11 @@ class JDELoad(trans.PyTensorOperation):
                 xy = np.concatenate((x - w / 2, y - h / 2, x + w / 2, y + h / 2)).reshape(4, n).T
 
                 # reject warped points outside of image
-                np.clip(xy[:, 0], 0, width, out=xy[:, 0])
-                np.clip(xy[:, 2], 0, width, out=xy[:, 2])
-                np.clip(xy[:, 1], 0, height, out=xy[:, 1])
-                np.clip(xy[:, 3], 0, height, out=xy[:, 3])
+                if self.clip_outside_points:
+                    np.clip(xy[:, 0], 0, width, out=xy[:, 0])
+                    np.clip(xy[:, 2], 0, width, out=xy[:, 2])
+                    np.clip(xy[:, 1], 0, height, out=xy[:, 1])
+                    np.clip(xy[:, 3], 0, height, out=xy[:, 3])
                 w = xy[:, 2] - xy[:, 0]
                 h = xy[:, 3] - xy[:, 1]
                 area = w * h

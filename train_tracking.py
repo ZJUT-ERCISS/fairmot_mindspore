@@ -45,7 +45,8 @@ def train_tracking(pargs):
         device_num = get_group_size()
         context.set_auto_parallel_context(device_num=get_group_size(),
                                           parallel_mode=ParallelMode.DATA_PARALLEL,
-                                          gradients_mean=True)
+                                          gradients_mean=True,
+                                          parameter_broadcast=True)
         ckpt_save_dir = config.train.ckpt_path + "ckpt_" + str(get_rank()) + "/"
         config.train.data_loader.dataset.num_shards = device_num
         config.train.data_loader.dataset.shard_id = rank_id

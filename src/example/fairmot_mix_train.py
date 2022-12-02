@@ -41,6 +41,7 @@ def fairmot_dla34_train(args_opt):
             init()
         else:
             init("nccl")
+        print("###run_distribute###")
         rank_id = get_rank()
         device_num = get_group_size()
         context.set_auto_parallel_context(device_num=device_num,
@@ -95,7 +96,7 @@ def fairmot_dla34_train(args_opt):
                     warmup_steps=args_opt.warmup_steps,
                     warmup_ratio=args_opt.warmup_ratio,
                     epoch_size=args_opt.epoch_size)
-
+    print("steps per epoch:", steps_per_epoch)
     # set optimizer
     network_opt = nn.Adam(network.trainable_params(), learning_rate=Tensor(lr))
 
@@ -106,7 +107,7 @@ def fairmot_dla34_train(args_opt):
 
     # set checkpoint for the network
     ckpt_config = CheckpointConfig(
-        save_checkpoint_steps=step_size,
+        save_checkpoint_steps=steps_per_epoch,
         keep_checkpoint_max=args_opt.keep_checkpoint_max)
     ckpt_callback = ModelCheckpoint(prefix='fairmot_dla34',
                                     directory=ckpt_save_dir,

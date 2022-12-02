@@ -108,7 +108,7 @@ bash scripts/run_eval.sh [CKPT_PATH] [DATA_ROOT] [VISIBLE_DEVICES(0,1,2,3,4,5,6,
 ```
 To infer using the model, run the shell script [scripts/run_infer.sh](scripts/run_infer.sh) with the format below:
 ```shell
-bash scripts/run_eval.sh [CKPT_PATH] [DATA_ROOT] [SAVE_VIDEO] [VISIBLE_DEVICES(0,1,2,3,4,5,6,7)]
+bash scripts/run_infer.sh [CKPT_PATH] [DATA_ROOT] [SAVE_VIDEO] [VISIBLE_DEVICES(0,1,2,3,4,5,6,7)]
 ```
 
 The validate and infer programme will generate pictures with predict bbox, and infer programme can generate video if `SAVE_VIDEO` is True.

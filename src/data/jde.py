@@ -214,7 +214,10 @@ class JDE(Dataset):
 
     def default_transform(self):
         """Default data augmentation."""
-        trans = [JDELoad((1088, 608))]
+        has_outside_points = True
+        if "MOT20" in self.images_path[0]:
+            has_outside_points = False
+        trans = [JDELoad((1088, 608), clip_outside_points=has_outside_points)]
         return trans
 
     def pipelines(self):
