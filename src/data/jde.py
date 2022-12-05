@@ -27,7 +27,7 @@ __all__ = ["MixJDE", "JDE", "ParseJDE"]
 
 
 @ClassFactory.register(ModuleType.DATASET)
-class MixJDE:
+class MixJDE(Dataset):
     """Multi-dataset based on jde datasets.
 
     Args:
@@ -50,9 +50,12 @@ class MixJDE:
                  repeat_num=1,
                  transform=None,
                  shuffle=None,
+                 resize=224,
                  num_parallel_workers=1,
                  num_shards=None,
-                 shard_id=None):
+                 shard_id=None,
+                 schema_json=None,
+                 trans_record=None,):
 
         with open(data_json, 'r', encoding='utf-8') as f:
             data = f.read()
@@ -61,33 +64,69 @@ class MixJDE:
         self.data_root = data_dict['data_root']
         self.batch_size = batch_size
         self.repeat_num = repeat_num
-        self.datasets = []
+        self.images_path = []
+        self.images_label = []
         for dname, dpath in data_dict[split].items():
             seq_path = osp.join(self.seq_root, dpath)
             print(f'Loading {dname}...')
-            self.datasets.append(JDE(seq_path=seq_path,
-                                     data_root=self.data_root,
-                                     repeat_num=1,
+            images_path_tmp, images_label_tmp = ParseJDE(seq_path).parse_dataset(self.data_root)
+            self.images_path.extend(images_path_tmp)
+            self.images_label.extend(images_label_tmp)
+            print(f'{dname} loaded.')
+            load_data = self.read_dataset
+            self.output_columns = ['imgs', 'hm', 'reg_mask', 'ind', 'wh', 'reg', 'ids']
+            self.input_columns = ['imgs', 'label']
+
+        super(MixJDE, self).__init__(path=self.data_root,
+                                     split=split,
+                                     load_data=load_data,
                                      transform=transform,
+                                     target_transform=None,
+                                     batch_size=batch_size,
+                                     repeat_num=repeat_num,
+                                     resize=resize,
                                      shuffle=shuffle,
                                      num_parallel_workers=num_parallel_workers,
                                      num_shards=num_shards,
-                                     shard_id=shard_id))
-            print(f'{dname} loaded.')
+                                     shard_id=shard_id,
+                                     columns_list=self.input_columns,
+                                     schema_json=schema_json,
+                                     trans_record=trans_record)
 
-    def run(self):
-        """Dataset pipeline."""
-        joint_dataset = None
-        for dataset in self.datasets:
-            dataset.pipelines()
-            proc_dataset = dataset.dataset.batch(self.batch_size, drop_remainder=True)
-            proc_dataset = proc_dataset.repeat(self.repeat_num)
-            if not joint_dataset:
-                joint_dataset = proc_dataset
-            else:
-                joint_dataset.concat(proc_dataset)
+    @property
+    def index2label(self):
+        """Get the mapping of indexes and labels."""
+        raise ValueError("JDE dataset has no label.")
 
-        return joint_dataset
+    def download_dataset(self):
+        """Download the JDE data if it doesn't exist already."""
+        raise ValueError("JDE dataset download is not supported.")
+
+    def read_dataset(self, *args):
+        if not args:
+            return self.images_path, self.images_label
+        return self.images_path[args[0]], self.images_label[args[0]]
+        # return np.fromfile(self.images_path[args[0]], dtype="int8"), self.images_label[args[0]]
+
+    def default_transform(self):
+        """Default data augmentation."""
+        has_outside_points = True
+        if "MOT20" in self.images_path[0]:
+            has_outside_points = False
+        trans = [JDELoad((1088, 608), clip_outside_points=has_outside_points)]
+        return trans
+
+    def pipelines(self):
+        """Data augmentation."""
+        if not self.dataset:
+            raise ValueError("dataset is None")
+
+        trans = self.transform if self.transform else self.default_transform()
+        self.dataset = self.dataset.map(operations=trans,
+                                        input_columns=self.input_columns,
+                                        output_columns=self.output_columns,
+                                        column_order=self.output_columns,
+                                        num_parallel_workers=self.num_parallel_workers)
 
 
 @ClassFactory.register(ModuleType.DATASET)

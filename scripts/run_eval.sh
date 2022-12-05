@@ -18,4 +18,4 @@ fi
 CKPT_PATH=$1
 DATA_ROOT=$2
 export CUDA_VISIBLE_DEVICES="$3"
-python src/example/fairmot_mix_eval.py --ckpt_path ${CKPT_PATH} --data_root ${DATA_ROOT} > output/eval.log 2>&1 &
+python src/example/fairmot_mix_eval.py --ckpt_path ${CKPT_PATH} --data_root ${DATA_ROOT} > output/${CKPT_PATH##*/}-eval.log 2>&1 &

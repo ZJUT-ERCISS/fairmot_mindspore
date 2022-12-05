@@ -20,4 +20,4 @@ CKPT_PATH=$1
 DATA_ROOT=$2
 SAVE_VIDEOS=$3
 export CUDA_VISIBLE_DEVICES="$4"
-python src/example/fairmot_mix_infer.py --ckpt_path ${CKPT_PATH} --data_root ${DATA_ROOT} --save_videos ${SAVE_VIDEOS} > output/infer.log 2>&1 &
+python src/example/fairmot_mix_infer.py --ckpt_path ${CKPT_PATH} --data_root ${DATA_ROOT} --save_videos ${SAVE_VIDEOS} > output/${CKPT_PATH##*/}-infer.log 2>&1 &
